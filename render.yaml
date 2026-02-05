@@ -1,0 +1,16 @@
+# Render.com deployment configuration
+services:
+  - type: web
+    name: honeypot-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: API_KEYS
+        sync: false
+      - key: LOG_LEVEL
+        value: INFO
+      - key: USE_REDIS_FALLBACK
+        value: "true"

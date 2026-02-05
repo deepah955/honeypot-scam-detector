@@ -1,0 +1,22 @@
+Classify whether the latest message shows scam intent.
+Consider:
+- OTP requests
+- Refund claims
+- KYC urgency
+- Payment requests
+- Suspicious links
+- Prize/lottery claims
+- Tech support scams
+- Impersonation of authority
+- Urgent money transfers
+- Requests for personal banking details
+
+Analyze the conversation context and the latest message carefully.
+
+Return ONLY valid JSON in this exact format:
+{
+  "is_scam": true/false,
+  "confidence": 0-1
+}
+
+Do not include any explanation or additional text. Only the JSON object.

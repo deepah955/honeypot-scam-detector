@@ -1,0 +1,26 @@
+Extract structured scam intelligence from the conversation.
+
+Look for and extract:
+- UPI IDs (format: username@bankname or phone@upi)
+- Bank account numbers (typically 9-18 digits)
+- IFSC codes (format: 4 letters + 7 alphanumeric, e.g., SBIN0001234)
+- URLs (any web links including shortened URLs)
+- Phone numbers (with or without country code)
+
+Return ONLY a valid JSON object in this exact format:
+{
+  "upi_ids": ["extracted upi ids or empty array"],
+  "bank_accounts": ["extracted account numbers or empty array"],
+  "ifsc_codes": ["extracted ifsc codes or empty array"],
+  "urls": ["extracted urls or empty array"],
+  "phones": ["extracted phone numbers or empty array"]
+}
+
+Important:
+- Extract ALL occurrences found in the conversation
+- Normalize phone numbers (remove spaces, keep country code if present)
+- Include full URLs without modifications
+- Do not include duplicates in the arrays
+- If nothing is found for a category, return an empty array []
+
+Do not include any explanation or additional text. Only the JSON object.
