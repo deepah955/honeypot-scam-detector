@@ -16,7 +16,7 @@ class APIKeyMiddleware(BaseHTTPMiddleware):
     """Middleware to validate API key in requests"""
     
     # Paths that don't require authentication
-    EXCLUDED_PATHS = ["/", "/health", "/docs", "/openapi.json", "/redoc", "/honeypot/test"]
+    EXCLUDED_PATHS = ["/", "/health", "/docs", "/openapi.json", "/redoc"]
     
     async def dispatch(self, request: Request, call_next):
         # Skip auth for excluded paths
