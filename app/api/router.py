@@ -25,8 +25,23 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/honeypot", tags=["honeypot"])
 
 
+@router.get("/message")
+async def get_message_info():
+    """GET endpoint for testing - returns basic service info"""
+    return {
+        "status": "operational",
+        "endpoint": "/honeypot/message",
+        "method": "POST",
+        "required_headers": {"x-api-key": "your-api-key"},
+        "example_body": {
+            "conversation_id": "test-123",
+            "message": "Your message here"
+        }
+    }
+
+
 @router.post("/message", response_model=MessageResponse)
-async def process_message(request: MessageRequest) -> MessageResponse:
+async def process_message(request: MessageRequest = None) -> MessageResponse:
     """
     Process an incoming scam conversation message.
     
@@ -36,6 +51,10 @@ async def process_message(request: MessageRequest) -> MessageResponse:
     4. Extract intelligence
     5. Return structured response
     """
+    # Use defaults if no request body provided
+    if request is None:
+        request = MessageRequest()
+    
     conversation_id = request.conversation_id
     message = request.message
     

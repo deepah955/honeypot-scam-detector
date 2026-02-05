@@ -9,8 +9,8 @@ from pydantic import BaseModel, Field
 
 class MessageRequest(BaseModel):
     """Incoming message request schema"""
-    conversation_id: str = Field(..., min_length=1, description="Unique conversation identifier")
-    message: str = Field(..., min_length=1, description="Incoming message content")
+    conversation_id: str = Field(default="default-test-conversation", description="Unique conversation identifier")
+    message: str = Field(default="Hello, this is a test message.", description="Incoming message content")
 
 
 class EngagementMetrics(BaseModel):
