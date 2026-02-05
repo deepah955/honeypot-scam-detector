@@ -48,6 +48,10 @@ class ScamDetectionService:
         Returns:
             Tuple of (is_scam, confidence)
         """
+        # Ensure message is a string
+        if not isinstance(message, str):
+            message = str(message) if message else ""
+        
         message_lower = message.lower()
         
         # Count matching patterns

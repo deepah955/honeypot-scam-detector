@@ -61,10 +61,14 @@ async def process_message(request: Request) -> MessageResponse:
         body = await request.body()
         if body:
             body_json = json.loads(body)
-            conversation_id = body_json.get("conversation_id", conversation_id)
-            message = body_json.get("message", message)
+            conversation_id = str(body_json.get("conversation_id", conversation_id))
+            message = str(body_json.get("message", message))
     except (json.JSONDecodeError, Exception) as e:
         logger.warning(f"Could not parse request body, using defaults: {e}")
+    
+    # Ensure values are strings
+    conversation_id = str(conversation_id) if conversation_id else "default-test-conversation"
+    message = str(message) if message else "Hello, this is a test message."
     
     logger.info(f"Processing message for conversation: {conversation_id}")
     
