@@ -1,10 +1,10 @@
 # Agentic Honey-Pot for Scam Detection & Intelligence Extraction
 
-A production-ready FastAPI-based public API that receives scam conversation messages, detects scam intent, hands off to an autonomous AI agent, engages scammers in multi-turn conversations, extracts intelligence, and returns structured JSON responses.
+A production-ready FastAPI-based public API that receives scam conversation messages, detects scam intent using heuristic rules, engages scammers in conversations, extracts intelligence, and returns structured JSON responses.
 
 ## Features
 
-- **Scam Detection**: LLM-based classification with heuristic fallback
+- **Scam Detection**: Heuristic-based classification with pattern matching
 - **Autonomous Agent**: Believable persona that engages scammers
 - **Strategy Selection**: Dynamic conversation strategies
 - **Intelligence Extraction**: Extracts UPI IDs, bank accounts, URLs, phone numbers
@@ -17,7 +17,7 @@ A production-ready FastAPI-based public API that receives scam conversation mess
 /app
   /api          # FastAPI endpoints and middleware
   /agents       # Autonomous honeypot agent
-  /prompts      # LLM prompt templates
+  /prompts      # Prompt templates
   /services     # Business logic services
   /models       # Pydantic schemas
   /memory       # Redis/in-memory store
@@ -33,7 +33,6 @@ README.md
 
 - Python 3.11+
 - Redis (optional, falls back to in-memory)
-- OpenAI API key
 
 ### 2. Installation
 
@@ -61,7 +60,7 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Edit .env with your settings
-# Required: OPENAI_API_KEY
+# Configure API_KEYS for authentication
 ```
 
 ### 4. Run the Server
@@ -88,7 +87,6 @@ docker build -t honeypot-ai .
 # Run container
 docker run -d \
   -p 8000:8000 \
-  -e OPENAI_API_KEY=your_key \
   -e API_KEYS=key1,key2 \
   -e REDIS_URL=redis://redis:6379/0 \
   honeypot-ai
@@ -134,8 +132,6 @@ Content-Type: application/json
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| OPENAI_API_KEY | OpenAI API key | Required |
-| OPENAI_MODEL | Model to use | gpt-4-turbo-preview |
 | REDIS_URL | Redis connection URL | redis://localhost:6379/0 |
 | API_KEYS | Comma-separated API keys | (none - dev mode) |
 | LOG_LEVEL | Logging level | INFO |
@@ -157,7 +153,7 @@ Content-Type: application/json
 ┌─────────────────────────────────────────────────────────────┐
 │                     Router Handler                          │
 │  1. Load conversation from Redis                            │
-│  2. Run scam detection                                      │
+│  2. Run scam detection (heuristic)                          │
 │  3. Select strategy (if scam)                               │
 │  4. Generate agent reply                                    │
 │  5. Extract intelligence                                    │
@@ -168,7 +164,7 @@ Content-Type: application/json
         ▼                    ▼                    ▼
 ┌───────────────┐  ┌─────────────────┐  ┌─────────────────┐
 │  Detection    │  │  HoneyPot Agent │  │   Extractor     │
-│  Service      │  │  (LLM Persona)  │  │   Service       │
+│  Service      │  │  (Heuristic)    │  │   Service       │
 └───────────────┘  └─────────────────┘  └─────────────────┘
 ```
 

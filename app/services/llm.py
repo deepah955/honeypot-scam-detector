@@ -1,42 +1,23 @@
 """
-LLM Service for OpenAI-compatible API interactions
+LLM Service - Heuristic-based response generator (No OpenAI required)
 """
 
-import json
 import logging
 from typing import Optional, List, Dict, Any
-
-from openai import AsyncOpenAI
-
-from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
 
 class LLMService:
-    """Service for LLM interactions"""
+    """Service for generating responses using heuristic rules (no external LLM)"""
     
     def __init__(self):
-        settings = get_settings()
-        self._api_key = settings.openai_api_key
-        self._has_api_key = bool(self._api_key and self._api_key.strip())
-        
-        if self._has_api_key:
-            self._client = AsyncOpenAI(
-                api_key=settings.openai_api_key,
-                base_url=settings.openai_base_url
-            )
-            self._model = settings.openai_model
-            logger.info("LLM Service initialized with OpenAI API")
-        else:
-            self._client = None
-            self._model = None
-            logger.warning("LLM Service running in FALLBACK mode - no OpenAI API key provided")
+        logger.info("LLM Service initialized in heuristic-only mode (no OpenAI)")
     
     @property
     def is_available(self) -> bool:
-        """Check if LLM is available"""
-        return self._has_api_key
+        """Check if LLM is available - always False since we don't use OpenAI"""
+        return False
     
     async def complete(
         self,
@@ -47,49 +28,14 @@ class LLMService:
         max_tokens: int = 1000
     ) -> str:
         """
-        Generate a completion from the LLM
+        Generate a completion using heuristic rules (no OpenAI)
         
-        Args:
-            system_prompt: System-level instructions
-            user_message: Current user message
-            conversation_history: Optional list of previous messages
-            temperature: Creativity parameter
-            max_tokens: Maximum response tokens
-            
         Returns:
             Generated response text
         """
-        # Fallback mode if no API key
-        if not self._has_api_key:
-            logger.warning("LLM not available, returning fallback response")
-            raise ValueError("OpenAI API key not configured")
-        
-        messages = [{"role": "system", "content": system_prompt}]
-        
-        # Add conversation history if provided
-        if conversation_history:
-            for turn in conversation_history:
-                messages.append({
-                    "role": turn.get("role", "user"),
-                    "content": turn.get("content", "")
-                })
-        
-        # Add current message
-        messages.append({"role": "user", "content": user_message})
-        
-        try:
-            response = await self._client.chat.completions.create(
-                model=self._model,
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
-            )
-            
-            return response.choices[0].message.content.strip()
-            
-        except Exception as e:
-            logger.error(f"LLM completion failed: {e}")
-            raise
+        # Return a heuristic-based response
+        logger.info("Generating heuristic-based response")
+        raise ValueError("LLM not configured - using heuristic fallback")
     
     async def complete_json(
         self,
@@ -99,40 +45,13 @@ class LLMService:
         temperature: float = 0.3
     ) -> Dict[str, Any]:
         """
-        Generate a JSON response from the LLM
+        Generate a JSON response using heuristic rules (no OpenAI)
         
-        Args:
-            system_prompt: System-level instructions
-            user_message: Current user message
-            conversation_history: Optional list of previous messages
-            temperature: Creativity parameter (lower for deterministic JSON)
-            
         Returns:
             Parsed JSON response
         """
-        response = await self.complete(
-            system_prompt=system_prompt,
-            user_message=user_message,
-            conversation_history=conversation_history,
-            temperature=temperature,
-            max_tokens=500
-        )
-        
-        # Clean response - remove markdown code blocks if present
-        response = response.strip()
-        if response.startswith("```json"):
-            response = response[7:]
-        if response.startswith("```"):
-            response = response[3:]
-        if response.endswith("```"):
-            response = response[:-3]
-        response = response.strip()
-        
-        try:
-            return json.loads(response)
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {response}")
-            raise ValueError(f"Invalid JSON response from LLM: {e}")
+        logger.info("Generating heuristic-based JSON response")
+        raise ValueError("LLM not configured - using heuristic fallback")
 
 
 # Singleton instance

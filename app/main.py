@@ -26,7 +26,6 @@ def setup_logging():
     
     # Reduce noise from external libraries
     logging.getLogger("httpx").setLevel(logging.WARNING)
-    logging.getLogger("openai").setLevel(logging.WARNING)
 
 setup_logging()
 logger = logging.getLogger(__name__)

@@ -11,11 +11,6 @@ from pydantic import Field
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
     
-    # OpenAI Configuration (optional - will use fallback responses if not set)
-    openai_api_key: str = Field(default="", env="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-4-turbo-preview", env="OPENAI_MODEL")
-    openai_base_url: str | None = Field(default=None, env="OPENAI_BASE_URL")
-    
     # Redis Configuration
     redis_url: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
     redis_password: str | None = Field(default=None, env="REDIS_PASSWORD")
