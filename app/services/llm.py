@@ -18,11 +18,25 @@ class LLMService:
     
     def __init__(self):
         settings = get_settings()
-        self._client = AsyncOpenAI(
-            api_key=settings.openai_api_key,
-            base_url=settings.openai_base_url
-        )
-        self._model = settings.openai_model
+        self._api_key = settings.openai_api_key
+        self._has_api_key = bool(self._api_key and self._api_key.strip())
+        
+        if self._has_api_key:
+            self._client = AsyncOpenAI(
+                api_key=settings.openai_api_key,
+                base_url=settings.openai_base_url
+            )
+            self._model = settings.openai_model
+            logger.info("LLM Service initialized with OpenAI API")
+        else:
+            self._client = None
+            self._model = None
+            logger.warning("LLM Service running in FALLBACK mode - no OpenAI API key provided")
+    
+    @property
+    def is_available(self) -> bool:
+        """Check if LLM is available"""
+        return self._has_api_key
     
     async def complete(
         self,
@@ -45,6 +59,11 @@ class LLMService:
         Returns:
             Generated response text
         """
+        # Fallback mode if no API key
+        if not self._has_api_key:
+            logger.warning("LLM not available, returning fallback response")
+            raise ValueError("OpenAI API key not configured")
+        
         messages = [{"role": "system", "content": system_prompt}]
         
         # Add conversation history if provided

@@ -11,8 +11,8 @@ from pydantic import Field
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
     
-    # OpenAI Configuration
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
+    # OpenAI Configuration (optional - will use fallback responses if not set)
+    openai_api_key: str = Field(default="", env="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-4-turbo-preview", env="OPENAI_MODEL")
     openai_base_url: str | None = Field(default=None, env="OPENAI_BASE_URL")
     
