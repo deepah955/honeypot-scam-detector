@@ -3,9 +3,11 @@ API Router - Main honeypot endpoint
 """
 
 import logging
+import json
 from datetime import datetime
+from typing import Optional, Dict, Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from app.models import (
     MessageRequest,
@@ -41,7 +43,7 @@ async def get_message_info():
 
 
 @router.post("/message", response_model=MessageResponse)
-async def process_message(request: MessageRequest = None) -> MessageResponse:
+async def process_message(request: Request) -> MessageResponse:
     """
     Process an incoming scam conversation message.
     
@@ -51,12 +53,18 @@ async def process_message(request: MessageRequest = None) -> MessageResponse:
     4. Extract intelligence
     5. Return structured response
     """
-    # Use defaults if no request body provided
-    if request is None:
-        request = MessageRequest()
+    # Parse request body - handle empty or malformed bodies gracefully
+    conversation_id = "default-test-conversation"
+    message = "Hello, this is a test message."
     
-    conversation_id = request.conversation_id
-    message = request.message
+    try:
+        body = await request.body()
+        if body:
+            body_json = json.loads(body)
+            conversation_id = body_json.get("conversation_id", conversation_id)
+            message = body_json.get("message", message)
+    except (json.JSONDecodeError, Exception) as e:
+        logger.warning(f"Could not parse request body, using defaults: {e}")
     
     logger.info(f"Processing message for conversation: {conversation_id}")
     
